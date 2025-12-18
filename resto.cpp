@@ -103,8 +103,9 @@ adrResto searchResto(ListResto L, string nama) {
 }
 
 adrMenu searchMenu(adrResto p, string namaMenu) {
-    if (p == NULL) return NULL;
-
+    if (p == NULL) {
+        return NULL;
+    }
     adrMenu q = p->firstMenu;
     while (q != NULL) {
         if (q->info.namaMenu == namaMenu) {
@@ -115,27 +116,30 @@ adrMenu searchMenu(adrResto p, string namaMenu) {
     return NULL;
 }
 
-void searchSemuaMenu(ListResto L, string namaMenu) {
+bool searchSemuaMenu(ListResto L, string namaMenu) {
     adrResto p = L.first;
     bool found = false;
+    cout << "\n========================================" << endl;
+    cout << "HASIL PENCARIAN MENU: '" << namaMenu << "'" << endl;
+    cout << "========================================" << endl;
 
-    cout << "\n--- HASIL PENCARIAN GLOBAL: '" << namaMenu << "' ---" << endl;
     while (p != NULL) {
-        adrMenu q = searchMenu(p, namaMenu);
-        if (q != NULL) {
-            cout << "Ditemukan di Restoran: " << p->info.nama
-                 << " | Kategori: " << q->info.kategori
-                 << " | Harga: Rp " << q->info.harga << endl;
-            found = true;
+        adrMenu q = p->firstMenu;
+        while (q != NULL) {
+            if (q->info.namaMenu == namaMenu) {
+                cout << "- Restoran: " << p->info.nama << " [Rp" << q->info.harga << "]" << endl;
+                found = true;
+            }
+            q = q->next;
         }
         p = p->next;
     }
 
-    if (!found) {
-        cout << "[!] Menu '" << namaMenu << "' tidak ditemukan di restoran manapun." << endl;
-    }
-    cout << "---------------------------------------------" << endl;
+    if (found) cout << "========================================" << endl;
+
+    return found;
 }
+
 // --- UPDATE ---
 
 void updateResto(adrResto p, string namaBaru, string alamatBaru, string jamBaru) {
@@ -353,9 +357,9 @@ void showRestoDetails(adrResto p) {
         cout << "\n========================================" << endl;
         cout << " DETAIL RESTORAN" << endl;
         cout << "========================================" << endl;
-        cout << "Nama    : " << p->info.nama << endl;
-        cout << "Alamat  : " << p->info.alamat << endl;
-        cout << "Jam Ops : " << p->info.jamOperasional << endl;
+        cout << "Nama            : " << p->info.nama << endl;
+        cout << "Alamat          : " << p->info.alamat << endl;
+        cout << "Jam Operasional : " << p->info.jamOperasional << endl;
         cout << "----------------------------------------" << endl;
         cout << "DAFTAR MENU:" << endl;
 

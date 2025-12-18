@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1766038652 source:d:\vivaldi\coding\tubes_struktur_data\main.cpp
+1766059604 source:d:\vivaldi\coding\tubes_struktur_data\main.cpp
 	<iostream>
 	"resto.h"
 
-1766037592 d:\vivaldi\coding\tubes_struktur_data\resto.h
+1766058956 d:\vivaldi\coding\tubes_struktur_data\resto.h
 	<iostream>
 	<cstdlib>
 
-1766037744 source:d:\vivaldi\coding\tubes_struktur_data\resto.cpp
+1766060275 source:d:\vivaldi\coding\tubes_struktur_data\resto.cpp
 	"resto.h"
 	<string>
 

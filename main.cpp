@@ -30,7 +30,7 @@ int main() {
         cout << "[6] Hapus Restoran" << endl;
         cout << "[7] Hapus Menu" << endl;
         cout << "[8] Ubah Urutan Tabel" << endl;
-        cout << "[9] Cari Menu (Global)" << endl;
+        cout << "[9] Search Menu" << endl;
         cout << "[0] Keluar" << endl;
         cout << "Pilihan: ";
         cin >> pilihanMenu;
@@ -96,7 +96,7 @@ int main() {
                     } else {
                         valid = true;
                         showRestoDetails(p);
-                        cout << "(Ketik x lalu enter untuk kembali) ";
+                        cout << "(Ketik x lalu enter untuk kembali): ";
                         string dummy; cin >> dummy;
                     }
                 }
@@ -224,16 +224,29 @@ int main() {
                 modeUrutan = tempMode;
             }
 
-        }else if (pilihanMenu == "9") {
-            cout << "\n--- CARI MENU ---" << endl;
-            cout << "Masukkan nama menu yang dicari: ";
-            string cariMenu;
-            cin >> cariMenu;
+        } else if (pilihanMenu == "9") {
+            cout << "\n--- SEARCH MENU ---" << endl;
+            cout << "Ketik 'x' untuk batal." << endl;
 
-            searchSemuaMenu(L, cariMenu);
+            bool valid = false;
+            do {
+                string cari;
+                cout << "Masukkan nama menu: ";
+                cin >> cari;
 
-            cout << "(Tekan enter untuk kembali)";
-            string dummy; cin.ignore(); getline(cin, dummy);
+                if (cari == "x") {
+                    valid = true;
+                } else {
+                    bool ketemu = searchSemuaMenu(L, cari);
+                    if (ketemu == false) {
+                        cout << "[!] Error: Menu tidak ditemukan di restoran manapun! Input ulang." << endl;
+                    } else {
+                        valid = true;
+                        cout << "(Ketik x lalu enter untuk kembali): ";
+                        string dummy; cin >> dummy;
+                    }
+                }
+            } while (valid == false);
 
         } else if (pilihanMenu == "0") {
             berjalan = false;
