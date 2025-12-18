@@ -1,6 +1,11 @@
-#include <iostream>
 #include "resto.h"
-using namespace std;
+#include <string>
+
+void clearScreen() {
+    system("cls"); // Gunakan "clear" di Linux/Mac
+}
+
+// --- BASIC OPERATIONS ---
 
 void createListResto(ListResto &L) {
     L.first = NULL;
@@ -8,7 +13,7 @@ void createListResto(ListResto &L) {
 }
 
 bool isEmptyResto(ListResto L) {
-    return (L.first == NULL && L.last == NULL);
+    return (L.first == NULL);
 }
 
 bool isEmptyMenu(adrResto p) {
@@ -27,38 +32,64 @@ adrResto createElementResto(string nama, string alamat, string jamOp) {
 }
 
 adrMenu createElementMenu(string nama, int harga, string kategori) {
-    adrMenu q = new elemenMenu;
-    q->info.namaMenu = nama;
-    q->info.harga = harga;
-    q->info.kategori = kategori;
-    q->next = NULL;
-    q->prev = NULL;
-    return q;
+    adrMenu p = new elemenMenu;
+    p->info.namaMenu = nama;
+    p->info.harga = harga;
+    p->info.kategori = kategori;
+    p->next = NULL;
+    p->prev = NULL;
+    return p;
 }
+
+// --- ADD ---
 
 void addResto(ListResto &L, adrResto p) {
-    if (isEmptyResto(L)) {
-        L.first = p;
-        L.last = p;
-    } else {
-        p->prev = L.last;
-        L.last->next = p;
-        L.last = p;
+    if (searchResto(L, p->info.nama) == NULL) {
+        if (isEmptyResto(L)) {
+            L.first = p;
+            L.last = p;
+        } else {
+            // Insert Sorted (A-Z)
+            if (p->info.nama < L.first->info.nama) {
+                p->next = L.first;
+                L.first->prev = p;
+                L.first = p;
+            } else if (p->info.nama > L.last->info.nama) {
+                p->prev = L.last;
+                L.last->next = p;
+                L.last = p;
+            } else {
+                adrResto q = L.first;
+                bool inserted = false;
+                while (q != NULL && inserted == false) {
+                    if (p->info.nama < q->info.nama) {
+                        p->next = q;
+                        p->prev = q->prev;
+                        q->prev->next = p;
+                        q->prev = p;
+                        inserted = true;
+                    }
+                    q = q->next;
+                }
+            }
+        }
     }
 }
 
-void addMenu(adrResto p, adrMenu q) {
+void addMenu(adrResto p, adrMenu pMenu) {
     if (p->firstMenu == NULL) {
-        p->firstMenu = q;
+        p->firstMenu = pMenu;
     } else {
-        adrMenu temp = p->firstMenu;
-        while (temp->next != NULL) {
-            temp = temp->next;
+        adrMenu q = p->firstMenu;
+        while (q->next != NULL) {
+            q = q->next;
         }
-        temp->next = q;
-        q->prev = temp;
+        q->next = pMenu;
+        pMenu->prev = q;
     }
 }
+
+// --- SEARCH ---
 
 adrResto searchResto(ListResto L, string nama) {
     adrResto p = L.first;
@@ -71,20 +102,31 @@ adrResto searchResto(ListResto L, string nama) {
     return NULL;
 }
 
+// --- UPDATE ---
+
+void updateResto(adrResto p, string namaBaru, string alamatBaru, string jamBaru) {
+    if (p != NULL) {
+        p->info.nama = namaBaru;
+        p->info.alamat = alamatBaru;
+        p->info.jamOperasional = jamBaru;
+    }
+}
+
+void updateMenu(adrMenu p, string namaBaru, int hargaBaru, string kategoriBaru) {
+    if (p != NULL) {
+        p->info.namaMenu = namaBaru;
+        p->info.harga = hargaBaru;
+        p->info.kategori = kategoriBaru;
+    }
+}
+
+// --- DELETE ---
+
 void deleteResto(ListResto &L, string nama) {
     adrResto p = searchResto(L, nama);
-
     if (p != NULL) {
-        // 1. Hapus Anak
-        adrMenu q = p->firstMenu;
-        while (q != NULL) {
-            adrMenu temp = q;
-            q = q->next;
-            delete temp;
-        }
-        p->firstMenu = NULL;
+        p->firstMenu = NULL; // Putus ke anak
 
-        // 2. Hapus Parent
         if (p == L.first && p == L.last) {
             L.first = NULL;
             L.last = NULL;
@@ -98,10 +140,6 @@ void deleteResto(ListResto &L, string nama) {
             p->prev->next = p->next;
             p->next->prev = p->prev;
         }
-        delete p;
-        cout << "[V] Restoran berhasil dihapus." << endl;
-    } else {
-        cout << "[X] Restoran tidak ditemukan." << endl;
     }
 }
 
@@ -110,7 +148,7 @@ void deleteMenu(adrResto p, string namaMenu) {
         adrMenu q = p->firstMenu;
         bool found = false;
 
-        while (q != NULL && !found) {
+        while (q != NULL && found == false) {
             if (q->info.namaMenu == namaMenu) {
                 found = true;
             } else {
@@ -118,263 +156,184 @@ void deleteMenu(adrResto p, string namaMenu) {
             }
         }
 
-        if (found) {
+        if (found == true) {
             if (q == p->firstMenu) {
                 p->firstMenu = q->next;
-                if (p->firstMenu != NULL) {
-                    p->firstMenu->prev = NULL;
-                }
+                if (p->firstMenu != NULL) p->firstMenu->prev = NULL;
             } else {
                 q->prev->next = q->next;
-                if (q->next != NULL) {
-                    q->next->prev = q->prev;
-                }
+                if (q->next != NULL) q->next->prev = q->prev;
             }
-            delete q;
-            cout << "[V] Menu berhasil dihapus." << endl;
-        } else {
-            cout << "[X] Menu tidak ditemukan." << endl;
         }
-    } else {
-        cout << "[!] Data kosong." << endl;
     }
 }
 
-void displayList(ListResto L) {
-    if (isEmptyResto(L)) {
-        cout << "--- Data Kosong ---" << endl;
-    } else {
-        adrResto p = L.first;
-        while (p != NULL) {
-            cout << "RESTO: " << p->info.nama
-                 << " | Avg Price: " << calculateAvgPrice(p)
-                 << " | Total Menu: " << countTotalMenu(p) << endl;
+// --- HELPER & HITUNGAN ---
 
-            adrMenu q = p->firstMenu;
-            if (q == NULL) {
-                cout << "   (Menu Kosong)" << endl;
-            } else {
-                while (q != NULL) {
-                    cout << "   - " << q->info.namaMenu
-                         << " [" << q->info.kategori << "] Rp" << q->info.harga << endl;
-                    q = q->next;
-                }
-            }
-            cout << "-----------------------------------" << endl;
-            p = p->next;
-        }
-    }
+int countResto(ListResto L) {
+    int hasil = 0;
+    adrResto q = L.first;
+    while(q != NULL) { hasil = hasil + 1; q = q->next; }
+    return hasil;
 }
 
 int countMenuByCategory(adrResto p, string kategori) {
-    int count = 0;
+    int hasil = 0;
     adrMenu q = p->firstMenu;
-    while (q != NULL) {
-        if (q->info.kategori == kategori) count++;
+    while(q != NULL) {
+        if(q->info.kategori == kategori) hasil = hasil + 1;
         q = q->next;
     }
-    return count;
+    return hasil;
 }
 
 int countTotalMenu(adrResto p) {
-    int count = 0;
+    int hasil = 0;
     adrMenu q = p->firstMenu;
-    while (q != NULL) {
-        count++;
-        q = q->next;
-    }
-    return count;
+    while(q != NULL) { hasil = hasil + 1; q = q->next; }
+    return hasil;
 }
 
 double calculateAvgPrice(adrResto p) {
     double total = 0;
     int count = 0;
     adrMenu q = p->firstMenu;
-    while (q != NULL) {
-        total += q->info.harga;
-        count++;
+    while(q != NULL) {
+        total = total + q->info.harga;
+        count = count + 1;
         q = q->next;
     }
-    if (count == 0) return 99999999;
+    if (count == 0) return 0;
     return total / count;
 }
 
-void sortRestoByNama(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
+// --- SORTING ---
 
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (ptr1->info.nama > ptr1->next->info.nama) {
-                    // Swap Info
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    // Swap Child
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
+void selectionSortResto(adrResto* arrayResto, int n, int mode) {
+    int i = 0;
+    while (i < n - 1) {
+        int indexTerpilih = i;
+        int j = i + 1;
 
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
+        while (j < n) {
+            bool harusTukar = false;
+            adrResto restoA = arrayResto[j];
+            adrResto restoB = arrayResto[indexTerpilih];
+
+            if (mode == 1) {
+                if (restoA->info.nama < restoB->info.nama) harusTukar = true;
+            } else if (mode == 2) {
+                if (countTotalMenu(restoA) > countTotalMenu(restoB)) harusTukar = true;
+            } else if (mode == 3) {
+                if (countMenuByCategory(restoA, "Appetizer") > countMenuByCategory(restoB, "Appetizer")) harusTukar = true;
+            } else if (mode == 4) {
+                if (countMenuByCategory(restoA, "Main_Course") > countMenuByCategory(restoB, "Main_Course")) harusTukar = true;
+            } else if (mode == 5) {
+                if (countMenuByCategory(restoA, "Dessert") > countMenuByCategory(restoB, "Dessert")) harusTukar = true;
+            } else if (mode == 6) {
+                if (countMenuByCategory(restoA, "Drinks") > countMenuByCategory(restoB, "Drinks")) harusTukar = true;
+            } else if (mode == 7) {
+                double hargaA = calculateAvgPrice(restoA);
+                double hargaB = calculateAvgPrice(restoB);
+                if (hargaA == 0) hargaA = 99999999;
+                if (hargaB == 0) hargaB = 99999999;
+                if (hargaA < hargaB) harusTukar = true;
             }
-            lptr = ptr1;
+
+            if (harusTukar == true) {
+                indexTerpilih = j;
+            }
+            j = j + 1;
         }
+
+        adrResto temp = arrayResto[i];
+        arrayResto[i] = arrayResto[indexTerpilih];
+        arrayResto[indexTerpilih] = temp;
+
+        i = i + 1;
     }
 }
 
-void sortRestoByTotalMenu(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
+// --- DISPLAY ---
 
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (countTotalMenu(ptr1) < countTotalMenu(ptr1->next)) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
+void displayTable(ListResto L, int mode) {
+    if (isEmptyResto(L)) {
+        cout << "\nDAFTAR RESTORAN (KOSONG)" << endl;
+        cout << "================================================================================================" << endl;
+        cout << "| NAMA RESTORAN       | ALAMAT          | JAM OPERASIONAL | JUMLAH MENU | RATA-RATA HARGA    |" << endl;
+        cout << "================================================================================================" << endl;
+        cout << "| -                   | -               | -               | -           | -                  |" << endl;
+        cout << "================================================================================================" << endl;
+    } else {
+        int n = countResto(L);
+        adrResto *arrayResto = new adrResto[n];
+        adrResto q = L.first;
+        int idx = 0;
+        while(q != NULL) {
+            arrayResto[idx] = q;
+            q = q->next;
+            idx = idx + 1;
         }
+
+        selectionSortResto(arrayResto, n, mode);
+
+        cout << "\nDAFTAR RESTORAN (Mode: " << mode << ")" << endl;
+        cout << "================================================================================================" << endl;
+        cout << "| NAMA RESTORAN       | ALAMAT          | JAM OPERASIONAL | JUMLAH MENU | RATA-RATA HARGA    |" << endl;
+        cout << "================================================================================================" << endl;
+
+        int k = 0;
+        while (k < n) {
+            adrResto currentResto = arrayResto[k];
+
+            cout << "| " << currentResto->info.nama;
+            int paddingSpace = 0;
+            while(paddingSpace < 20 - currentResto->info.nama.length()) { cout << " "; paddingSpace++; }
+
+            cout << "| " << currentResto->info.alamat;
+            paddingSpace = 0;
+            while(paddingSpace < 16 - currentResto->info.alamat.length()) { cout << " "; paddingSpace++; }
+
+            cout << "| " << currentResto->info.jamOperasional;
+            paddingSpace = 0;
+            while(paddingSpace < 16 - currentResto->info.jamOperasional.length()) { cout << " "; paddingSpace++; }
+
+            cout << "| " << countTotalMenu(currentResto);
+            if(countTotalMenu(currentResto) < 10) cout << "           "; else cout << "          ";
+
+            double averagePrice = calculateAvgPrice(currentResto);
+            cout << "| Rp " << (int)averagePrice;
+            string stringAveragePrice = to_string((int)averagePrice);
+            paddingSpace = 0;
+            while(paddingSpace < 16 - stringAveragePrice.length()) { cout << " "; paddingSpace++; }
+
+            cout << "|" << endl;
+            k = k + 1;
+        }
+        cout << "================================================================================================" << endl;
     }
 }
 
-void sortRestoByAppetizer(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (countMenuByCategory(ptr1, "Appetizer") < countMenuByCategory(ptr1->next, "Appetizer")) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
-        }
-    }
-}
+void showRestoDetails(adrResto p) {
+    if (p != NULL) {
+        cout << "\n========================================" << endl;
+        cout << " DETAIL RESTORAN" << endl;
+        cout << "========================================" << endl;
+        cout << "Nama    : " << p->info.nama << endl;
+        cout << "Alamat  : " << p->info.alamat << endl;
+        cout << "Jam Ops : " << p->info.jamOperasional << endl;
+        cout << "----------------------------------------" << endl;
+        cout << "DAFTAR MENU:" << endl;
 
-void sortRestoByMainCourse(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (countMenuByCategory(ptr1, "Main Course") < countMenuByCategory(ptr1->next, "Main Course")) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
+        adrMenu q = p->firstMenu;
+        if (q == NULL) {
+            cout << "(Tidak ada menu)" << endl;
         }
-    }
-}
-
-void sortRestoByDessert(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (countMenuByCategory(ptr1, "Dessert") < countMenuByCategory(ptr1->next, "Dessert")) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
+        while (q != NULL) {
+            cout << "- " << q->info.namaMenu
+                 << " [" << q->info.kategori << "] : Rp " << q->info.harga << endl;
+            q = q->next;
         }
-    }
-}
-
-void sortRestoByDrinks(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (countMenuByCategory(ptr1, "Drinks") < countMenuByCategory(ptr1->next, "Drinks")) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
-        }
-    }
-}
-
-void sortRestoByAvgPrice(ListResto &L) {
-    if (!isEmptyResto(L) && L.first->next != NULL) {
-        bool swapped = true;
-        adrResto ptr1;
-        adrResto lptr = NULL;
-        while (swapped) {
-            swapped = false;
-            ptr1 = L.first;
-            while (ptr1->next != lptr) {
-                if (calculateAvgPrice(ptr1) > calculateAvgPrice(ptr1->next)) {
-                    Restoran tempInfo = ptr1->info;
-                    ptr1->info = ptr1->next->info;
-                    ptr1->next->info = tempInfo;
-                    adrMenu tempMenu = ptr1->firstMenu;
-                    ptr1->firstMenu = ptr1->next->firstMenu;
-                    ptr1->next->firstMenu = tempMenu;
-                    swapped = true;
-                }
-                ptr1 = ptr1->next;
-            }
-            lptr = ptr1;
-        }
+        cout << "========================================" << endl;
     }
 }
