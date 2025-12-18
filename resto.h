@@ -1,9 +1,12 @@
 #ifndef RESTO_H_INCLUDED
 #define RESTO_H_INCLUDED
+
 #include <iostream>
+#include <cstdlib> // Untuk system("cls")
 using namespace std;
 
-// Struktur Data
+// --- STRUKTUR DATA ---
+
 typedef struct elemenResto *adrResto;
 typedef struct elemenMenu *adrMenu;
 
@@ -16,7 +19,7 @@ struct Restoran {
 struct Menu {
     string namaMenu;
     int harga;
-    string kategori; // Appetizer, Main Course, Dessert, Drinks
+    string kategori;
 };
 
 struct elemenResto {
@@ -37,37 +40,42 @@ struct ListResto {
     adrResto last;
 };
 
-// CreateList & isEmpty
+// --- FUNGSI & PROSEDUR ---
+
+// Basic
 void createListResto(ListResto &L);
 bool isEmptyResto(ListResto L);
 bool isEmptyMenu(adrResto p);
-
-// Create & Add
 adrResto createElementResto(string nama, string alamat, string jamOp);
 adrMenu createElementMenu(string nama, int harga, string kategori);
-void addResto(ListResto &L, adrResto p);
-void addMenu(adrResto p, adrMenu q);
 
-// Search & Display
+// Add
+void addResto(ListResto &L, adrResto p);
+void addMenu(adrResto p, adrMenu pMenu);
+
+// Search
 adrResto searchResto(ListResto L, string nama);
-void displayList(ListResto L);
+
+// Update
+void updateResto(adrResto p, string namaBaru, string alamatBaru, string jamBaru);
+void updateMenu(adrMenu p, string namaBaru, int hargaBaru, string kategoriBaru);
 
 // Delete
 void deleteResto(ListResto &L, string nama);
 void deleteMenu(adrResto p, string namaMenu);
 
-// Sorting
-void sortRestoByNama(ListResto &L);          // Alfabet A-Z
-void sortRestoByTotalMenu(ListResto &L);     // Menu Terbanyak
-void sortRestoByAppetizer(ListResto &L);     // Appetizer Terbanyak
-void sortRestoByMainCourse(ListResto &L);    // Main Course Terbanyak
-void sortRestoByDessert(ListResto &L);       // Dessert Terbanyak
-void sortRestoByDrinks(ListResto &L);        // Drinks Terbanyak
-void sortRestoByAvgPrice(ListResto &L);      // Harga Termurah
-
-// Fungsi Lainnya
+// Helper Hitungan
+int countResto(ListResto L);
 int countMenuByCategory(adrResto p, string kategori);
 int countTotalMenu(adrResto p);
 double calculateAvgPrice(adrResto p);
+
+// Sorting
+void selectionSortResto(adrResto* arrayResto, int n, int mode);
+
+// Display
+void displayTable(ListResto L, int mode);
+void showRestoDetails(adrResto p);
+void clearScreen();
 
 #endif // RESTO_H_INCLUDED
