@@ -102,6 +102,40 @@ adrResto searchResto(ListResto L, string nama) {
     return NULL;
 }
 
+adrMenu searchMenu(adrResto p, string namaMenu) {
+    if (p == NULL) return NULL;
+
+    adrMenu q = p->firstMenu;
+    while (q != NULL) {
+        if (q->info.namaMenu == namaMenu) {
+            return q;
+        }
+        q = q->next;
+    }
+    return NULL;
+}
+
+void searchSemuaMenu(ListResto L, string namaMenu) {
+    adrResto p = L.first;
+    bool found = false;
+
+    cout << "\n--- HASIL PENCARIAN GLOBAL: '" << namaMenu << "' ---" << endl;
+    while (p != NULL) {
+        adrMenu q = searchMenu(p, namaMenu);
+        if (q != NULL) {
+            cout << "Ditemukan di Restoran: " << p->info.nama
+                 << " | Kategori: " << q->info.kategori
+                 << " | Harga: Rp " << q->info.harga << endl;
+            found = true;
+        }
+        p = p->next;
+    }
+
+    if (!found) {
+        cout << "[!] Menu '" << namaMenu << "' tidak ditemukan di restoran manapun." << endl;
+    }
+    cout << "---------------------------------------------" << endl;
+}
 // --- UPDATE ---
 
 void updateResto(adrResto p, string namaBaru, string alamatBaru, string jamBaru) {

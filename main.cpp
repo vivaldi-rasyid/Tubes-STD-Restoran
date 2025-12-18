@@ -30,6 +30,7 @@ int main() {
         cout << "[6] Hapus Restoran" << endl;
         cout << "[7] Hapus Menu" << endl;
         cout << "[8] Ubah Urutan Tabel" << endl;
+        cout << "[9] Cari Menu (Global)" << endl;
         cout << "[0] Keluar" << endl;
         cout << "Pilihan: ";
         cin >> pilihanMenu;
@@ -222,6 +223,17 @@ int main() {
             if (tempMode >= 1 && tempMode <= 7) {
                 modeUrutan = tempMode;
             }
+
+        }else if (pilihanMenu == "9") {
+            cout << "\n--- CARI MENU ---" << endl;
+            cout << "Masukkan nama menu yang dicari: ";
+            string cariMenu;
+            cin >> cariMenu;
+
+            searchSemuaMenu(L, cariMenu);
+
+            cout << "(Tekan enter untuk kembali)";
+            string dummy; cin.ignore(); getline(cin, dummy);
 
         } else if (pilihanMenu == "0") {
             berjalan = false;

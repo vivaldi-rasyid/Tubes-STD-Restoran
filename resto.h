@@ -55,6 +55,8 @@ void addMenu(adrResto p, adrMenu pMenu);
 
 // Search
 adrResto searchResto(ListResto L, string nama);
+adrMenu searchMenu(adrResto p, string namaMenu);
+void searchSemuaMenu(ListResto L, string namaMenu);
 
 // Update
 void updateResto(adrResto p, string namaBaru, string alamatBaru, string jamBaru);
