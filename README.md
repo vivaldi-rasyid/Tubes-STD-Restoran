@@ -2,7 +2,7 @@
 
 Aplikasi manajemen data restoran berbasis _console_ (CLI) yang dibangun menggunakan bahasa C++. Proyek ini mengimplementasikan struktur data **Relational Doubly Linked List** (Parent-Child) untuk mengelola hubungan antara Restoran dan Menu.
 
-## 📋 Fitur Utama**
+## 📋 Fitur Utama
 
 Aplikasi ini memiliki fitur **CRUD** (Create, Read, Update, Delete) lengkap beserta fitur pengurutan dan pencarian data:
 
@@ -32,14 +32,14 @@ Aplikasi mendukung pengurutan tabel restoran berdasarkan berbagai kriteria mengg
 - 🥤 Jumlah _Drinks_ Terbanyak
 - 💲 Rata-rata Harga Termurah
 
-## 🛠️ Struktur Data**
+## 🛠️ Struktur Data
 
 Proyek ini menggunakan **Multi-Linked List** (List of Lists):
 
 - **List Parent (Restoran):** Menggunakan _Doubly Linked List_. Setiap _node_ restoran memiliki pointer ke _node_ menu pertamanya (firstMenu).
 - **List Child (Menu):** Menggunakan _Doubly Linked List_. Setiap _node_ menu terhubung satu sama lain dalam lingkup satu restoran.
 
-## 🚀 Cara Menjalankan**
+## 🚀 Cara Menjalankan
 
 **Opsi 1: Menggunakan Terminal (CLI)**
 
@@ -70,6 +70,6 @@ Jika Anda menggunakan IDE Code::Blocks, ikuti langkah berikut untuk menghindari 
   - Pastikan tidak ada file main.cpp ganda (hapus main.cpp default bawaan Code::Blocks jika ada).
   - Tekan tombol **F9** (Build and Run).
 
-## 📚 Data Dummy (Copy & Paste)**
+## 📚 Data Dummy (Copy & Paste)
 
 Berikut adalah [data](https://drive.google.com/file/d/1VLxjDS0PvMVaBzzoPmSfkWoIalnPgh97/view?usp=sharing) sampel yang dapat digunakan untuk menguji aplikasi.
