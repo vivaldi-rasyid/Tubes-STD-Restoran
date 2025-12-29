@@ -1,4 +1,4 @@
-**🍽️ Restaurant Management System (C++)**
+# 🍽️ Restaurant Management System (C++)
 
 Aplikasi manajemen data restoran berbasis _console_ (CLI) yang dibangun menggunakan bahasa C++. Proyek ini mengimplementasikan struktur data **Relational Doubly Linked List** (Parent-Child) untuk mengelola hubungan antara Restoran dan Menu.
 
